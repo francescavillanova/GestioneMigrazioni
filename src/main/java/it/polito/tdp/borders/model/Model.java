@@ -1,5 +1,6 @@
 package it.polito.tdp.borders.model;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -18,6 +19,8 @@ public class Model {
 
 	private Graph<Country, DefaultEdge> graph;
 	private Map<Integer, Country> countriesMap;
+	
+	private Map<Country, Integer> personeStanziali;
 
 	public Model() {
 		this.countriesMap = new HashMap<>();
@@ -59,5 +62,38 @@ public class Model {
 		}
 		return null;
 
+	}
+	
+	
+	/**
+	 * crea il simulatore e lo fa lavorare
+	 * @param partenza
+	 */
+	public int simula(Country partenza) {
+		Simulatore sim=new Simulatore(this.graph);
+		sim.init(partenza, 1000);
+		sim.run();
+//		System.out.println("Passi: "+sim.getnPassi());
+//		System.out.println(sim.getPersone());
+		
+		this.personeStanziali=sim.getPersone();
+		return sim.getnPassi();
+		
+	}
+	
+	
+	public List<CountryAndNumber> getPersoneStanziali(){
+		List<CountryAndNumber> lista=new ArrayList<CountryAndNumber>();
+		for(Country c: this.personeStanziali.keySet()) {
+			int persone=this.personeStanziali.get(c);
+			//se il numero di persone in quel paese è != 0
+			if(persone!=0) {  
+				lista.add(new CountryAndNumber(c, persone));
+			}
+		}
+		
+		//Ora devo ordinare la lista 
+		Collections.sort(lista);  //faccio così perchè l'ordinamento naturale degli oggetti CountryAndNumber va già bene (si vede nel compareTo)
+		return lista;
 	}
 }
